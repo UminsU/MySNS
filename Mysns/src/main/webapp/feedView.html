@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name=viewport content="width=device-width, initial-scale=1, user-scalable=0">
+        <meta charset="UTF-8" />
+        <link rel="stylesheet" href="css/core.css">
+        <link rel="stylesheet" href="css/main.css">
+        <title>MySNS</title>
+        <style>
+			.feed .text2 {
+				float: left;
+				width: 100%;
+				margin: 10px 0px 30px 0px;
+				padding: 0px 16px;
+				box-sizing: border-box;
+				font-size: 1.0em;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="page-hdr">MySNS</div>
+		<div class="page-body">
+			<div id="content" class="section"></div>
+		</div>
+	</body>
+</html>
+
+<script src="js/jquery-3.7.1.min.js"></script>
+<script src="js/core.js"></script>
+<script>
+	var isAuthor = false;
+	
+	$(document).ready(function(){
+	    Page.init(start, "feedView.html");
+	});
+	
+	function start(uid, feed) {
+	    AJAX.call("jsp/session.jsp", null, function(data){
+	        var uid = data.trim();
+	        if(uid == feed.id){
+	            isAuthor = true;
+	        } else {
+	            isAuthor = false;
+	        }
+	        displayFeed(feed);
+	    });
+	}
+	
+	function displayFeed(feed) {
+	    $("#content").append(getFeedCode(feed));
+	}
+	
+	function getFeedCode(feed) {
+	    var name = (feed.user == null) ? feed.id : feed.user.name;
+	    
+	    var str = "<div class='feed'>";
+	    str += "<div class='author'>";
+	    
+		if(feed.user == null || feed.user.images == null){
+			str += "<div class='photo'></div>";
+		}
+		else {
+			var imgurl = "images/" + feed.user.images[0];
+			str += "<div class='photo' style='background-image: url(\"" + imgurl + "\")'></div>";
+		}
+
+	    str += "<div class='name'>" + name + "</div>";
+	    str += "</div>";
+	    
+	    str += "<div class='text2' id='editContent'>" + feed.content + "</div>";
+	    
+	    if(feed.images != null) {
+	        var imgstr = "images/" + feed.images[0];
+	        str += "<div class='image' style='background-image: url(\"" + imgstr + "\")'></div>";
+	    }
+	    
+	    if(isAuthor) {
+			str += "<div class='section pad-24 mtop-20'>"
+			str += "<div class='button' onclick='goEdit(" + feed.no + ")'>수정하기</div>";
+			str += "<div class='button' style='margin-top: 10px;' onclick='deleteFeed(" + feed.no + ")'>삭제하기</div>";
+			str += "</div>"
+		}
+		
+	    str += "</div>";
+	    return str;
+	}
+	
+	function goEdit(feedNo) {
+	    var editInfo = {
+			feedNo: feedNo,
+            content: $("#editContent").text()
+        };
+        sessionStorage.setItem("editInfo", JSON.stringify(editInfo));
+        window.location.href = "feedUpdate.html";
+	}
+
+	function deleteFeed(feedNo) {		
+		if(confirm("정말 글을 삭제하시겠습니까?")){
+			AJAX.call("jsp/feedDelete.jsp", {feedNo: feedNo}, function(data){
+				if(data.trim() == "OK"){
+					DataCache.remove("mainCache");
+					alert("삭제가 완료되었습니다.");
+					window.location.href = "main.html";
+				} else {
+					alert("글 삭제 중 오류가 발생하였습니다.");
+				}
+			});
+		}
+	}
+
+</script>

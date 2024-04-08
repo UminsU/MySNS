@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content="width=device-width, initial-scale=1, user-scalable=0">
+    <title>SNS 메인 화면</title>
+    <style>
+        body {
+            display: flex;
+            max-width : 100%;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+        }
+        .icon {
+            /* 아이콘 이미지의 스타일*/
+        }
+        .button {
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">
+            <img src="image/snsMain.jpg" width="400px" alt="Minsu's SNS">
+        </div>
+        <div>
+            <div class="button" onclick="goLogin()">로그인</div>
+            <div class="button" onclick="goSignup()">회원가입</div>
+        </div>
+    </div>
+</body>
+</html>
+
+<script src="js/jquery-3.7.1.min.js"></script>
+<script src="js/core.js"></script>
+<script>
+	function goLogin() {
+		window.location.href = "login.html";
+	}
+	
+	function goSignup() {
+		window.location.href = "chaptcha.html";
+	}
+
+</script>

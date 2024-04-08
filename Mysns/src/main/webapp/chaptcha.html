@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
+    <title>CAPTCHA</title>
+    <style>
+        body {
+            display: flex;
+            max-width: 100%;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+        }
+        .button {
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>로봇이 아닙니다!</h1>
+        <p id="captchaText" style="font-size: 20pt;" ><%= captchaText %></p>
+        <br>
+        <input type="text" id="captchaInput" placeholder="보안 코드 입력" />
+        <button class="button" onclick="verifyCaptcha()">확인</button>
+        <button class="button" onclick="refreshCaptcha()">새로고침</button>
+    </div>
+<script src="js/jquery-3.7.1.min.js"></script>
+<script src="js/core.js"></script>
+    <script>
+        function refreshCaptcha() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "jsp/chaptcha.jsp", true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var response = xhr.responseText;
+                    document.getElementById("captchaText").textContent = response;
+                }
+            };
+            xhr.send();
+        }
+
+        function verifyCaptcha() {
+            var userInput = document.getElementById("captchaInput").value;
+            var captchaText = document.getElementById("captchaText").textContent.replace(/(\r|\n)/g, "");
+
+            if (userInput == captchaText) {
+                alert("인증 성공!");
+                window.location.href = "signup.html"; // 캡챠 인증 성공 시 signup.html로 이동
+            } else {
+                alert("인증 실패!");
+                refreshCaptcha(); // 캡챠 인증 실패 시 캡챠를 다시 수행
+            }
+        }
+
+        // 페이지 로드 시 캡챠 값 초기화
+        window.onload = refreshCaptcha;
+    </script>
+</body>
+</html>
